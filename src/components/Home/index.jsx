@@ -21,6 +21,8 @@ export default class Home extends Component {
       hasSearched: false,
       query: '',
       movies: [],
+      filter: '',
+      filteredMovies: '',
     }
   }
   
@@ -34,6 +36,7 @@ export default class Home extends Component {
     this.setState({
       hasSearched: true,
       movies: results,
+      filteredMovies: results,
       query: '',
     })
   }
@@ -44,6 +47,28 @@ export default class Home extends Component {
     })
   }
 
+  onFilter = (e) => {
+    switch(e.target.value) {
+      case 'score-asc':
+        this.setState(prevState=>({
+          filter: e.target.value,
+          filteredMovies: prevState.filteredMovies.sort((a,b)=>a.score - b.score)
+        }))
+        return
+      case 'score-des':
+        this.setState(prevState=>({
+          filter: e.target.value,
+          filteredMovies: prevState.filteredMovies.sort((a,b)=>b.score - a.score)
+        }))
+        return
+      default: 
+        this.setState(prevState=>({
+          filter: e.target.value,
+          filteredMovies: prevState.movies
+        }))
+    }
+  }
+
   render() {
     return (
       <Container>
@@ -51,8 +76,10 @@ export default class Home extends Component {
         {
           this.state.hasSearched 
           ? 
-          (<Results movies={this.state.movies}
-                    onSearchAgain={this.onSearchAgain}/>)
+          (<Results movies={this.state.filteredMovies}
+                    onSearchAgain={this.onSearchAgain}
+                    value={this.state.filter}
+                    onFilter={this.onFilter}/>)
           :
           (<Search query={this.state.query}
             onSearchInput={this.handleSearchInput}
